@@ -59,6 +59,18 @@ def get_cashflow(
 
 
 @tool
+def get_cash_flow(
+    ticker: Annotated[str, "ticker symbol"],
+    freq: Annotated[str, "reporting frequency: annual/quarterly"] = "quarterly",
+    curr_date: Annotated[str, "current date you are trading at, yyyy-mm-dd"] = None,
+) -> str:
+    """
+    Retrieve cash flow statement data (alias). Provided for compatibility with alternate tool naming.
+    """
+    return route_to_vendor("get_cashflow", ticker, freq, curr_date)
+
+
+@tool
 def get_income_statement(
     ticker: Annotated[str, "ticker symbol"],
     freq: Annotated[str, "reporting frequency: annual/quarterly"] = "quarterly",
@@ -75,3 +87,22 @@ def get_income_statement(
         str: A formatted report containing income statement data
     """
     return route_to_vendor("get_income_statement", ticker, freq, curr_date)
+
+
+@tool
+def get_earnings_call_transcript(
+    ticker: Annotated[str, "ticker symbol"],
+    quarter: Annotated[str, "fiscal quarter in format YYYYQ#"],
+    curr_date: Annotated[str, "current date you are trading at, yyyy-mm-dd"] = None,
+) -> str:
+    """
+    Retrieve earnings call transcript for a given ticker and quarter.
+    Uses the configured fundamental_data vendor.
+    Args:
+        ticker (str): Ticker symbol of the company
+        quarter (str): Fiscal quarter in format YYYYQ# (e.g., 2024Q1)
+        curr_date (str): Current date you are trading at, yyyy-mm-dd
+    Returns:
+        str: Transcript text including sentiment signals when available
+    """
+    return route_to_vendor("get_earnings_call_transcript", ticker, quarter, curr_date)

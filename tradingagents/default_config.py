@@ -12,11 +12,23 @@ DEFAULT_CONFIG = {
     "llm_provider": "ollama",
     "deep_think_llm": "o4-mini",
     "quick_think_llm": "gpt-4o-mini",
-    "backend_url": "http://100.121.219.121:11434/v1",
+    "backend_url": "http://100.103.46.96:11434/v1",
     # Debate and discussion settings
     "max_debate_rounds": 1,
     "max_risk_discuss_rounds": 1,
     "max_recur_limit": 100,
+    # Trading and backtesting defaults
+    "default_trade_quantity": 1,
+    "backtest_lookback_days": 30,
+    "account_initial_cash": 100000.0,
+    "account_current_position": 0,
+    "account_max_allocation_pct": 0.1,
+    "account_min_cash_reserve": 10000.0,
+    
+    # Reflection mechanism improvements
+    "reflection_lookforward_days": 5,      # 决策后向前看多少天计算实际收益
+    "reflection_min_age_days": 5,          # 决策至少保存多久才能触发反思
+    "use_hierarchical_memory": False,      # 是否启用分层记忆系统（建议生产环境启用）
     # Data vendor configuration
     # Category-level configuration (default for all tools in category)
     "data_vendors": {
@@ -30,4 +42,5 @@ DEFAULT_CONFIG = {
         "get_stock_data": "yfinance",  # Override category default
         # Example: "get_news": "openai",               # Override category default
     },
+    "chroma_persist_path": "./chroma_memory",  # chromadb 持久化路径
 }

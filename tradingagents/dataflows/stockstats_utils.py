@@ -32,6 +32,10 @@ class StockstatsUtils:
                         f"{symbol}-YFin-data-2015-01-01-2025-03-25.csv",
                     )
                 )
+                # 确保 Date 列格式正确
+                if "Date" in data.columns:
+                    data["Date"] = pd.to_datetime(data["Date"], errors="coerce")
+                    data = data.dropna(subset=["Date"])
                 df = wrap(data)
             except FileNotFoundError:
                 raise Exception("Stockstats fail: Yahoo Finance data not fetched yet!")
@@ -55,7 +59,14 @@ class StockstatsUtils:
 
             if os.path.exists(data_file):
                 data = pd.read_csv(data_file)
-                data["Date"] = pd.to_datetime(data["Date"])
+                # 强制解析 Date 列，处理异常值
+                try:
+                    data["Date"] = pd.to_datetime(data["Date"], format="%Y-%m-%d", errors="coerce")
+                except Exception:
+                    # 如果解析失败，尝试推断格式
+                    data["Date"] = pd.to_datetime(data["Date"], errors="coerce")
+                # 删除无效日期行
+                data = data.dropna(subset=["Date"])
             else:
                 data = yf.download(
                     symbol,
@@ -69,11 +80,21 @@ class StockstatsUtils:
                 data.to_csv(data_file, index=False)
 
             df = wrap(data)
+            # 确保 Date 列是 datetime 类型后再转字符串
+            if not pd.api.types.is_datetime64_any_dtype(df["Date"]):
+                df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
+            df = df.dropna(subset=["Date"])  # 删除无效日期
             df["Date"] = df["Date"].dt.strftime("%Y-%m-%d")
             curr_date = curr_date.strftime("%Y-%m-%d")
 
         df[indicator]  # trigger stockstats to calculate the indicator
-        matching_rows = df[df["Date"].str.startswith(curr_date)]
+        
+        # 确保 Date 列是字符串类型，且格式正确
+        try:
+            matching_rows = df[df["Date"].astype(str).str.startswith(curr_date)]
+        except Exception as e:
+            print(f"Error matching date {curr_date} in dataframe: {e}")
+            return "N/A: Date matching error"
 
         if not matching_rows.empty:
             indicator_value = matching_rows[indicator].values[0]

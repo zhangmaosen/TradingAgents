@@ -84,12 +84,32 @@ class TradingAgentsGraph:
         else:
             raise ValueError(f"Unsupported LLM provider: {self.config['llm_provider']}")
         
-        # Initialize memories
-        self.bull_memory = FinancialSituationMemory("bull_memory", self.config)
-        self.bear_memory = FinancialSituationMemory("bear_memory", self.config)
-        self.trader_memory = FinancialSituationMemory("trader_memory", self.config)
-        self.invest_judge_memory = FinancialSituationMemory("invest_judge_memory", self.config)
-        self.risk_manager_memory = FinancialSituationMemory("risk_manager_memory", self.config)
+        # Initialize memories (支持分层记忆)
+        use_hierarchical_memory = self.config.get("use_hierarchical_memory", False)
+        
+        if use_hierarchical_memory:
+            from tradingagents.agents.utils.hierarchical_memory import HierarchicalMemoryManager
+            
+            self.bull_memory_manager = HierarchicalMemoryManager("bull", self.config)
+            self.bear_memory_manager = HierarchicalMemoryManager("bear", self.config)
+            self.trader_memory_manager = HierarchicalMemoryManager("trader", self.config)
+            self.invest_judge_memory_manager = HierarchicalMemoryManager("invest_judge", self.config)
+            self.risk_manager_memory_manager = HierarchicalMemoryManager("risk_manager", self.config)
+            
+            # 创建兼容包装器
+            from tradingagents.agents.utils.hierarchical_memory import BackwardCompatibleMemory
+            self.bull_memory = BackwardCompatibleMemory("bull", self.config)
+            self.bear_memory = BackwardCompatibleMemory("bear", self.config)
+            self.trader_memory = BackwardCompatibleMemory("trader", self.config)
+            self.invest_judge_memory = BackwardCompatibleMemory("invest_judge", self.config)
+            self.risk_manager_memory = BackwardCompatibleMemory("risk_manager", self.config)
+        else:
+            # 传统单层记忆
+            self.bull_memory = FinancialSituationMemory("bull_memory", self.config)
+            self.bear_memory = FinancialSituationMemory("bear_memory", self.config)
+            self.trader_memory = FinancialSituationMemory("trader_memory", self.config)
+            self.invest_judge_memory = FinancialSituationMemory("invest_judge_memory", self.config)
+            self.risk_manager_memory = FinancialSituationMemory("risk_manager_memory", self.config)
 
         # Create tool nodes
         self.tool_nodes = self._create_tool_nodes()
@@ -108,7 +128,10 @@ class TradingAgentsGraph:
             self.conditional_logic,
         )
 
-        self.propagator = Propagator()
+        self.propagator = Propagator(
+            max_recur_limit=self.config.get("max_recur_limit", 100),
+            config=self.config,
+        )
         self.reflector = Reflector(self.quick_thinking_llm)
         self.signal_processor = SignalProcessor(self.quick_thinking_llm)
 
@@ -153,6 +176,7 @@ class TradingAgentsGraph:
                     get_balance_sheet,
                     get_cashflow,
                     get_income_statement,
+                    
                 ]
             ),
         }
@@ -161,6 +185,14 @@ class TradingAgentsGraph:
         """Run the trading agents graph for a company on a specific date."""
 
         self.ticker = company_name
+        
+        # 如果使用分层记忆，设置当前ticker
+        if self.config.get("use_hierarchical_memory", False):
+            self.bull_memory.set_ticker(company_name)
+            self.bear_memory.set_ticker(company_name)
+            self.trader_memory.set_ticker(company_name)
+            self.invest_judge_memory.set_ticker(company_name)
+            self.risk_manager_memory.set_ticker(company_name)
 
         # Initialize state
         init_agent_state = self.propagator.create_initial_state(
@@ -183,14 +215,20 @@ class TradingAgentsGraph:
             # Standard mode without tracing
             final_state = self.graph.invoke(init_agent_state, **args)
 
+        trade_signals = self.attach_trade_signals(final_state)
+
         # Store current state for reflection
         self.curr_state = final_state
 
         # Log state
         self._log_state(trade_date, final_state)
 
+        processed_decision = final_state.get("processed_trade_decision", "")
+        if not processed_decision and final_state.get("final_trade_decision"):
+            processed_decision = self.process_signal(final_state["final_trade_decision"])
+
         # Return decision and processed signal
-        return final_state, self.process_signal(final_state["final_trade_decision"])
+        return final_state, processed_decision
 
     def _log_state(self, trade_date, final_state):
         """Log the final state to a JSON file."""
@@ -219,9 +257,19 @@ class TradingAgentsGraph:
                 "neutral_history": final_state["risk_debate_state"]["neutral_history"],
                 "history": final_state["risk_debate_state"]["history"],
                 "judge_decision": final_state["risk_debate_state"]["judge_decision"],
+                "recommended_quantity": final_state["risk_debate_state"].get(
+                    "recommended_quantity", 0
+                ),
+                "reference_price": final_state["risk_debate_state"].get(
+                    "reference_price", 0.0
+                ),
             },
             "investment_plan": final_state["investment_plan"],
             "final_trade_decision": final_state["final_trade_decision"],
+            "processed_trade_decision": final_state.get("processed_trade_decision", ""),
+            "trade_signals": final_state.get("trade_signals", []),
+            "account_state": final_state.get("account_state", {}),
+            "recommended_trade": final_state.get("recommended_trade", {}),
         }
 
         # Save to file
@@ -255,3 +303,68 @@ class TradingAgentsGraph:
     def process_signal(self, full_signal):
         """Process a signal to extract the core decision."""
         return self.signal_processor.process_signal(full_signal)
+
+    def attach_trade_signals(self, final_state):
+        """Attach structured trade signals to the final state."""
+        trade_signals = self._build_trade_signals(final_state)
+        final_state["trade_signals"] = trade_signals
+        return trade_signals
+
+    def _build_trade_signals(self, final_state):
+        """Build structured trade signals from the final decision."""
+        existing_signals = final_state.get("trade_signals")
+        if existing_signals:
+            return existing_signals
+
+        final_decision_text = final_state.get("final_trade_decision", "")
+        if not final_decision_text:
+            final_state["processed_trade_decision"] = ""
+            return []
+
+        recommended_trade = final_state.get("recommended_trade") or {}
+
+        recommended_action = recommended_trade.get("action")
+        if recommended_action:
+            final_state["processed_trade_decision"] = recommended_action.upper()
+
+        action = final_state.get("processed_trade_decision", "").strip().upper()
+        if not action:
+            try:
+                action = self.process_signal(final_decision_text).strip().upper()
+            except Exception:
+                action = ""
+            final_state["processed_trade_decision"] = action
+
+        if not action:
+            return []
+
+        quantity = recommended_trade.get("quantity") if recommended_trade else None
+
+        if quantity is None:
+            if action == "HOLD":
+                quantity = 0
+            else:
+                quantity = self.config.get("default_trade_quantity", 1)
+
+        try:
+            quantity = int(quantity)
+        except (TypeError, ValueError):
+            quantity = self.config.get("default_trade_quantity", 1)
+        quantity = max(quantity, 0)
+
+        reference_price = recommended_trade.get("reference_price") if recommended_trade else None
+
+        trade_signal = {
+            "ticker": final_state.get("company_of_interest", self.ticker),
+            "date": final_state.get("trade_date"),
+            "signal": action.lower(),
+            "action": action,
+            "quantity": quantity,
+            "source": "risk_manager",
+            "notes": final_decision_text.strip(),
+        }
+
+        if reference_price is not None:
+            trade_signal["reference_price"] = reference_price
+
+        return [trade_signal]
