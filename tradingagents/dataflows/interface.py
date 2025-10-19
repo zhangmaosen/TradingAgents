@@ -13,7 +13,8 @@ from .alpha_vantage import (
     get_cashflow as get_alpha_vantage_cashflow,
     get_income_statement as get_alpha_vantage_income_statement,
     get_insider_transactions as get_alpha_vantage_insider_transactions,
-    get_news as get_alpha_vantage_news
+    get_news as get_alpha_vantage_news,
+    get_earnings_call_transcript as get_alpha_vantage_earnings_call_transcript
 )
 from .alpha_vantage_common import AlphaVantageRateLimitError
 
@@ -40,7 +41,8 @@ TOOLS_CATEGORIES = {
             "get_fundamentals",
             "get_balance_sheet",
             "get_cashflow",
-            "get_income_statement"
+            "get_income_statement",
+            "get_earnings_call_transcript",
         ]
     },
     "news_data": {
@@ -94,6 +96,9 @@ VENDOR_METHODS = {
         "alpha_vantage": get_alpha_vantage_income_statement,
         "yfinance": get_yfinance_income_statement,
         "local": get_simfin_income_statements,
+    },
+    "get_earnings_call_transcript": {
+        "alpha_vantage": get_alpha_vantage_earnings_call_transcript,
     },
     # news_data
     "get_news": {

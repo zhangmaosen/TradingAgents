@@ -128,7 +128,7 @@ def select_shallow_thinking_agent(provider) -> str:
     # Define shallow thinking llm engine options with their corresponding model names
     SHALLOW_AGENT_OPTIONS = {
         "openai": [
-            ("GPT-4o-mini - Fast and efficient for quick tasks", "gpt-4o-mini"),
+            ("glm-4.5 - Fast and efficient for quick tasks", "glm-4.5"),
             ("GPT-4.1-nano - Ultra-lightweight model for basic operations", "gpt-4.1-nano"),
             ("GPT-4.1-mini - Compact model with good performance", "gpt-4.1-mini"),
             ("GPT-4o - Standard model with solid capabilities", "gpt-4o"),
@@ -150,8 +150,8 @@ def select_shallow_thinking_agent(provider) -> str:
             ("google/gemini-2.0-flash-exp:free - Gemini Flash 2.0 offers a significantly faster time to first token", "google/gemini-2.0-flash-exp:free"),
         ],
         "ollama": [
-            ("qwen3:8b local", "qwen3:8b"),
-            #("llama3.2 local", "llama3.2"),
+            ("qwen3:30b local", "qwen3:30b"),
+            ("qwen3-coder:30b userroot", "qwen3-coder:30b"),
         ]
     }
 
@@ -186,7 +186,7 @@ def select_deep_thinking_agent(provider) -> str:
     # Define deep thinking llm engine options with their corresponding model names
     DEEP_AGENT_OPTIONS = {
         "openai": [
-            ("GPT-4.1-nano - Ultra-lightweight model for basic operations", "gpt-4.1-nano"),
+            ("glm-4.5 - Ultra-lightweight model for basic operations", "glm-4.5"),
             ("GPT-4.1-mini - Compact model with good performance", "gpt-4.1-mini"),
             ("GPT-4o - Standard model with solid capabilities", "gpt-4o"),
             ("o4-mini - Specialized reasoning model (compact)", "o4-mini"),
@@ -212,8 +212,8 @@ def select_deep_thinking_agent(provider) -> str:
             ("Deepseek - latest iteration of the flagship chat model family from the DeepSeek team.", "deepseek/deepseek-chat-v3-0324:free"),
         ],
         "ollama": [
-            ("qwen3:8b local", "qwen3:8b"),
-            #("qwen3", "qwen3"),
+            ("qwen3:30b local", "qwen3:30b"),
+            ("qwen3-coder:30b userroot", "qwen3-coder:30b"),
         ]
     }
     
@@ -242,12 +242,13 @@ def select_deep_thinking_agent(provider) -> str:
 def select_llm_provider() -> tuple[str, str]:
     """Select the OpenAI api url using interactive selection."""
     # Define OpenAI api options with their corresponding endpoints
+    from tradingagents.default_config import DEFAULT_CONFIG
     BASE_URLS = [
-        ("OpenAI", "https://api.openai.com/v1"),
+        ("OpenAI", "https://open.bigmodel.cn/api/paas/v4/"),
         ("Anthropic", "https://api.anthropic.com/"),
         ("Google", "https://generativelanguage.googleapis.com/v1"),
         ("Openrouter", "https://openrouter.ai/api/v1"),
-        ("Ollama", "http://100.121.219.121:11434/v1"),        
+        ("Ollama", DEFAULT_CONFIG["backend_url"]),
     ]
     
     choice = questionary.select(
