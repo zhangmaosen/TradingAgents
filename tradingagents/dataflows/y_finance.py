@@ -211,6 +211,10 @@ def _get_stock_stats_bulk(
                     f"{symbol}-YFin-data-2015-01-01-2025-03-25.csv",
                 )
             )
+            # 确保 Date 列格式正确
+            if "Date" in data.columns:
+                data["Date"] = pd.to_datetime(data["Date"], errors="coerce")
+                data = data.dropna(subset=["Date"])
             df = wrap(data)
         except FileNotFoundError:
             raise Exception("Stockstats fail: Yahoo Finance data not fetched yet!")
@@ -233,7 +237,13 @@ def _get_stock_stats_bulk(
         
         if os.path.exists(data_file):
             data = pd.read_csv(data_file)
-            data["Date"] = pd.to_datetime(data["Date"])
+            # 强制解析 Date 列，处理异常值
+            try:
+                data["Date"] = pd.to_datetime(data["Date"], format="%Y-%m-%d", errors="coerce")
+            except Exception:
+                data["Date"] = pd.to_datetime(data["Date"], errors="coerce")
+            # 删除无效日期行
+            data = data.dropna(subset=["Date"])
         else:
             data = yf.download(
                 symbol,
@@ -247,6 +257,10 @@ def _get_stock_stats_bulk(
             data.to_csv(data_file, index=False)
         
         df = wrap(data)
+        # 确保 Date 列是 datetime 类型后再转字符串
+        if not pd.api.types.is_datetime64_any_dtype(df["Date"]):
+            df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
+        df = df.dropna(subset=["Date"])
         df["Date"] = df["Date"].dt.strftime("%Y-%m-%d")
     
     # Calculate the indicator for all rows at once
@@ -255,14 +269,20 @@ def _get_stock_stats_bulk(
     # Create a dictionary mapping date strings to indicator values
     result_dict = {}
     for _, row in df.iterrows():
-        date_str = row["Date"]
-        indicator_value = row[indicator]
-        
-        # Handle NaN/None values
-        if pd.isna(indicator_value):
-            result_dict[date_str] = "N/A"
-        else:
-            result_dict[date_str] = str(indicator_value)
+        try:
+            date_str = str(row["Date"]) if pd.notna(row["Date"]) else ""
+            if not date_str or date_str == "":
+                continue
+            indicator_value = row[indicator]
+            
+            # Handle NaN/None values
+            if pd.isna(indicator_value):
+                result_dict[date_str] = "N/A"
+            else:
+                result_dict[date_str] = str(indicator_value)
+        except Exception as e:
+            # Skip rows with invalid data
+            continue
     
     return result_dict
 

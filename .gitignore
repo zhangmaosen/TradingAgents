@@ -1,11 +1,36 @@
-.venv
-results
+.venv/
 env/
+venv/
+.python-version
+
+# Python cache and build artifacts
 __pycache__/
-.DS_Store
-*.csv
-src/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+*.egg-info/
+build/
+dist/
+
+# Environment and configuration files
+.env
+.env.*
+
+# Project results and generated assets
+results/
 eval_results/
 eval_data/
-*.egg-info/
-.env
+chroma_memory/
+
+# Data caches and large local data
+tradingagents/dataflows/data_cache/
+*.csv
+
+# Editor / OS noise
+.DS_Store
+.vscode/
+.idea/
+
+# Temporary or debug logs
+*.log
