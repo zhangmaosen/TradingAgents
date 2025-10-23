@@ -62,6 +62,34 @@ TradingAgents/
 - **[FIVE_MENTAL_MODELS_INTEGRATION.md](FIVE_MENTAL_MODELS_INTEGRATION.md)** - 思维模型的代码集成
   - 如何在各个 Agent 中应用这些模型
 
+- **[MENTAL_MODELS_CODE_MAPPING.md](MENTAL_MODELS_CODE_MAPPING.md)** - 🔥 **五大模型的完整代码映射**
+  - 每个模型在代码中的具体位置
+  - 从提示词到代码的完整链条
+  - TSLA Robotaxi 案例的完整追踪
+  - 五大模型的协同运作流程
+
+- **[FIVE_MENTAL_MODELS_EFFECTIVENESS.md](FIVE_MENTAL_MODELS_EFFECTIVENESS.md)** - 🔥 **五大模型的生效机制**
+  - 模型为什么有效以及如何运作
+  - 隐式编码在提示词中的方式
+  - 通过多智能体辩论体现
+  - 元学习和反思的作用
+
+- **[MENTAL_MODELS_OPTIMIZATION_PLAN.md](MENTAL_MODELS_OPTIMIZATION_PLAN.md)** - 🔥 **实施优化计划**
+  - 从隐式到显式的优化方案
+  - Phase 1-5 详细实施步骤
+  - 模型评分函数实现
+  - 准确率追踪系统
+  - 动态权重调整
+  - 8-12天的完整实施路线图
+
+- **[MENTAL_MODELS_QUICK_REFERENCE.md](MENTAL_MODELS_QUICK_REFERENCE.md)** - 🔥 **快速参考卡**
+  - 五大模型的一句话总结
+  - 0-10分评分标准
+  - 典型场景与应用
+  - 危险信号检测
+  - 完整决策树
+  - 快速检查清单
+
 ### 反思和学习系统
 - **[reflection_flow_analysis.md](reflection_flow_analysis.md)** - 交易反思机制详解
   - 交易后的自动反思流程

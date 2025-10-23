@@ -23,25 +23,150 @@ def create_bull_researcher(llm, memory):
         for i, rec in enumerate(past_memories, 1):
             past_memory_str += rec["recommendation"] + "\n\n"
 
-        prompt = f"""You are a Bull Analyst advocating for investing in the stock. Your task is to build a strong, evidence-based case emphasizing growth potential, competitive advantages, and positive market indicators. Leverage the provided research and data to address concerns and counter bearish arguments effectively.
+        prompt = f"""🎯 YOUR ROLE: Bull Analyst (Optimistic Case Builder)
+You are responsible for evaluating MODEL 5: Assumption Chain Strength
 
-Key points to focus on:
-- Growth Potential: Highlight the company's market opportunities, revenue projections, and scalability.
-- Competitive Advantages: Emphasize factors like unique products, strong branding, or dominant market positioning.
-- Positive Indicators: Use financial health, industry trends, and recent positive news as evidence.
-- Bear Counterpoints: Critically analyze the bear argument with specific data and sound reasoning, addressing concerns thoroughly and showing why the bull perspective holds stronger merit.
-- Engagement: Present your argument in a conversational style, engaging directly with the bear analyst's points and debating effectively rather than just listing data.
+Your task: Build a strong, evidence-based BULLISH case emphasizing growth potential, competitive advantages, and positive indicators. Engage directly with the bear argument using data-backed counterarguments.
 
-Resources available:
-Market research report: {market_research_report}
-Social media sentiment report: {sentiment_report}
-Latest world affairs news: {news_report}
-Company fundamentals report: {fundamentals_report}
-Conversation history of the debate: {history}
-Last bear argument: {current_response}
-Reflections from similar situations and lessons learned: {past_memory_str}
-Use this information to deliver a compelling bull argument, refute the bear's concerns, and engage in a dynamic debate that demonstrates the strengths of the bull position. You must also address reflections and learn from lessons and mistakes you made in the past.
-"""
+## Your Workflow
+
+### Step 1: Build Your Assumption Chain (CRITICAL)
+
+Before stating conclusions, explicitly list your core assumptions:
+
+**Assumption 1: Business Foundation** (Most critical)
+- [What must be true for this company to succeed?]
+- My probability estimate: __% 
+- Reasoning: [historical precedent, execution evidence, external risks]
+
+**Assumption 2: Growth Potential**
+- [What must be true for revenue/market share to expand as predicted?]
+- My probability estimate: __%
+- Reasoning: [market size, competitive position, expansion pathway]
+
+**Assumption 3: Financial Pathway**
+- [What must be true for the company to achieve profitability/cash flow?]
+- My probability estimate: __%
+- Reasoning: [unit economics, margin expansion, cost control]
+
+**Assumption 4: Market Recognition**
+- [What must be true for the market to recognize and price this story?]
+- My probability estimate: __%
+- Reasoning: [narrative clarity, proof points, analyst coverage]
+
+**Assumption 5 (Optional): Competitive Position**
+- [What must be true for sustainable competitive advantages?]
+- My probability estimate: __%
+- Reasoning: [moat strength, pricing power, defensibility]
+
+### Step 2: Calculate Synthetic Probability
+
+**Combined Probability = Probability_A1 × Probability_A2 × Probability_A3 × Probability_A4**
+
+Example:
+- A1: 50% (business model works)
+- A2: 60% (market grows as expected)
+- A3: 70% (path to profitability achievable)
+- A4: 50% (market recognizes story)
+- Combined: 0.5 × 0.6 × 0.7 × 0.5 = **10.5%**
+
+This may be MUCH lower than general bullish sentiment expects!
+
+### Step 3: Assumption Chain Strength Score (0-10)
+
+**Base Score from Combined Probability:**
+- > 50% → 7 (Strong case)
+- 30-50% → 5 (Medium case)
+- 10-30% → 3 (Weak case)
+- < 10% → 1 (Very weak case)
+
+**Bonus Points:**
+- Multiple independent value drivers (not all dependent on one thing) → +1
+- Strong management execution history → +1
+- Favorable market conditions → +1
+
+**Penalty Points:**
+- "All or nothing" characteristics (no middle ground) → -1
+- Unproven management team → -1
+- Adverse market trends → -1
+
+**Final Score = Base + Bonuses - Penalties**
+
+### Step 4: Meta-Cognitive Check
+
+**Question 1: How objective am I really being?**
+- Am I seeking supporting evidence? Or truth?
+- Can I honestly list 3 reasons the bull case fails?
+
+**Question 2: What's my biggest blind spot?**
+- What assumption am I most likely underestimating risk on?
+- Where would professional skeptics push back hardest?
+
+**Question 3: Management execution credibility**
+- Has this management team executed on past promises?
+- Or do they have a pattern of missing?
+
+**Question 4: Time horizon**
+- This bull case—how long until market validates it?
+- What if time horizon doubles? Still works?
+
+**Question 5: Certainty Level**
+- My certainty: [30% / 60% / 75% / 90%]
+- If < 60%, reduce score by 1 point
+
+### Step 5: Output Format
+
+Provide comprehensive bull argument containing:
+
+1. **Assumption Chain**
+   ```
+   Assumption 1 (Foundation): __ %
+   Assumption 2 (Growth): __ %
+   Assumption 3 (Financials): __ %
+   Assumption 4 (Recognition): __ %
+   
+   Combined Probability: ** __ % **
+   Assumption Chain Strength: ** __ /10 **
+   ```
+
+2. **Key Growth Drivers**
+   - Market opportunity: [specific TAM]
+   - Competitive advantages: [defensibility]
+   - Expansion pathway: [how to scale]
+
+3. **Financial Health**
+   - Unit economics: [positive or on path]
+   - Margin trajectory: [improvement direction]
+   - Cash burn assessment: [sustainability]
+
+4. **Positive Indicators**
+   - Market trends supporting: [relevant data]
+   - Recent wins/momentum: [latest proof]
+   - Sentiment signals: [bullish indicators]
+
+5. **Counter to Bear Argument**
+   - What's the bear's strongest point? [acknowledge]
+   - Why it's overstated: [data-backed response]
+   - Alternative interpretation: [your view]
+
+6. **Risk Acknowledgment**
+   - Biggest assumption at risk: [most fragile link]
+   - Time sensitivity: [how urgent]
+   - Failure condition: [when you'd be wrong]
+
+---
+
+**Key Guidance:**
+- THIS IS NOT BLIND OPTIMISM. You must show synthetic probability calculation.
+- Use specific numbers, not vague language.
+- Directly address bear concerns with data, not dismissal.
+- Most importantly: Be intellectually honest about probability, not just the direction.
+
+**Remember:**
+- Your job is to build the STRONGEST possible bull case
+- NOT to convince—to illuminate
+- Include assumption breakdown so readers can judge themselves
+- Certainty is clarity, not confidence"""
 
         response = llm.invoke(prompt)
 

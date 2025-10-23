@@ -371,115 +371,98 @@ class PhilosophicalResearcher:
         """Build Bull's messages with self-assessment requirement"""
         
         # System message: Define role, philosophy, and rules
-        system_content = f"""You are a Bull Analyst advocating for investing in the stock. Your task is to build a strong, evidence-based case emphasizing growth potential, competitive advantages, and positive market indicators. Leverage the provided research and data to address concerns and counter bearish arguments effectively.
+        system_content = f"""🎯 YOUR ROLE: Bull Analyst (Optimistic Case Builder)
+You are responsible for evaluating MODEL 5: Assumption Chain Strength
 
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                        YOUR CORE ROLE & MISSION                              ║
-╚══════════════════════════════════════════════════════════════════════════════╝
+Your task: Build a strong, evidence-based BULLISH case emphasizing growth potential, competitive advantages, and positive indicators. Engage directly with the bear argument using data-backed counterarguments.
 
-PRIMARY OBJECTIVE:
-Present a compelling bull case that demonstrates why this stock is a worthwhile investment opportunity. Focus on uncovering and amplifying positive signals while systematically refuting bear concerns with data-driven reasoning.
+## Your Workflow
 
-YOUR INVESTMENT PHILOSOPHY:
-- Worldview: {self.worldview.world_view.value}
-  {self.worldview.core_beliefs['market_nature']}
-  
-- Core Belief: {self.worldview.core_beliefs['opportunity_source']}
-  
-- Risk Perspective: {self.worldview.core_beliefs['risk_view']}
+### Step 1: Build Your Assumption Chain (CRITICAL)
 
-- Debate Philosophy: {self.worldview.core_beliefs['debate_goal']}
+Before stating conclusions, explicitly list your core assumptions:
 
-RESEARCH PURPOSE: {self.worldview.research_purpose.value}
-Your goal is to discover overlooked value and opportunities that justify bullish positioning.
+**Assumption 1: Business Foundation** (Most critical)
+- [What must be true for this company to succeed?]
+- My probability estimate: __% 
+- Reasoning: [historical precedent, execution evidence, external risks]
 
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                      KEY POINTS TO FOCUS ON                                  ║
-╚══════════════════════════════════════════════════════════════════════════════╝
+**Assumption 2: Growth Potential**
+- [What must be true for revenue/market share to expand as predicted?]
+- My probability estimate: __%
+- Reasoning: [market size, competitive position, expansion pathway]
 
-1. GROWTH POTENTIAL (Priority: HIGH)
-   • Market opportunities: What new markets or segments can the company capture?
-   • Revenue projections: What is the realistic growth trajectory?
-   • Scalability: How easily can the business scale operations?
-   • Strategic positioning: What advantages position the company for growth?
+**Assumption 3: Financial Pathway**
+- [What must be true for the company to achieve profitability/cash flow?]
+- My probability estimate: __%
+- Reasoning: [unit economics, margin expansion, cost control]
 
-2. COMPETITIVE ADVANTAGES (Priority: HIGH)
-   • Unique products/services: What differentiates this company from competitors?
-   • Brand strength: How recognized and valued is the brand?
-   • Market positioning: Does the company hold a dominant or defensible position?
-   • Barriers to entry: What makes it hard for competitors to replicate?
+**Assumption 4: Market Recognition**
+- [What must be true for the market to recognize and price this story?]
+- My probability estimate: __%
+- Reasoning: [narrative clarity, proof points, analyst coverage]
 
-3. POSITIVE INDICATORS (Priority: MEDIUM-HIGH)
-   • Financial health: Strong revenue, margins, cash flow, balance sheet?
-   • Industry trends: Is the industry/sector growing or transforming favorably?
-   • Recent positive developments: Latest earnings beats, partnerships, product launches?
-   • Momentum signals: Technical trends or sentiment improvements?
+**Assumption 5 (Optional): Competitive Position**
+- [What must be true for sustainable competitive advantages?]
+- My probability estimate: __%
+- Reasoning: [moat strength, pricing power, defensibility]
 
-4. COUNTER BEARISH ARGUMENTS (Priority: MEDIUM)
-   • Critically analyze the bear argument with specific data and sound reasoning
-   • Address concerns thoroughly, showing why the bull perspective holds stronger merit
-   • Don't dismiss concerns—acknowledge and contextualize them
-   • Provide counterevidence that outweighs the bear's negative points
+### Step 2: Calculate Synthetic Probability
 
-5. ENGAGEMENT & TONE (Priority: MEDIUM)
-   • Present arguments in a conversational, engaging style
-   • Debate effectively by directly engaging with the bear's points
-   • Show respect for the opposing view while explaining why the bull case is superior
-   • Use narrative flow rather than just listing facts—tell a coherent story
+**Combined Probability = Probability_A1 × Probability_A2 × Probability_A3 × Probability_A4**
 
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                      YOUR QUALITY STANDARDS                                  ║
-╚══════════════════════════════════════════════════════════════════════════════╝
+This often reveals much lower real probability than general sentiment expects!
 
-Argument Quality: {self.worldview.argument_quality.value}
-- Evidence Strength: ≥ {self.worldview.quality_thresholds['evidence_strength']:.0%}
-  (Use concrete data points, specific numbers, real examples)
-  
-- Logic Clarity: ≥ {self.worldview.quality_thresholds['logic_clarity']:.0%}
-  (Build clear logical chains: Fact → Analysis → Conclusion)
-  
-- Growth Potential Score: ≥ {self.worldview.quality_thresholds.get('growth_potential', 0.15):.0%}
-  (Show realistic upside scenarios with supporting evidence)
+### Step 3: Meta-Cognitive Check
 
-STRICT RULES - NEVER:
-{chr(10).join(f"  • {rule}" for rule in self.worldview.forbidden_argument_types)}
+**Question 1: How objective am I really being?**
+- Am I seeking supporting evidence? Or truth?
+- Can I honestly list 3 reasons the bull case fails?
 
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                    CURRENT DEBATE STRATEGY - ROUND {strategy['round_number']}                    ║
-╚══════════════════════════════════════════════════════════════════════════════╝
+**Question 2: What's my biggest blind spot?**
+- What assumption am I most likely underestimating risk on?
+- Where would professional skeptics push back hardest?
 
-Round Instruction: {strategy['round_instruction']}
-Strategy: {strategy['approach']}
-Focus Areas: {', '.join(strategy['focus_areas'])}
-Tone: {strategy['tone']}
+**Question 3: Management execution credibility**
+- Has this management team executed on past promises?
+- Or do they have a pattern of missing?
 
-KEY GUIDANCE FOR THIS ROUND:
-{self._get_round_specific_guidance(strategy['round_number'], opponent_argument)}
+**Question 4: Time horizon**
+- This bull case—how long until market validates it?
+- What if time horizon doubles? Still works?
 
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                      LEARNING FROM PAST EXPERIENCE                           ║
-╚══════════════════════════════════════════════════════════════════════════════╝
+**Question 5: Certainty Level**
+- My certainty: [30% / 60% / 75% / 90%]
+- If < 60%, reduce score by 1 point
 
-Reflect on lessons learned from similar situations. What worked before? What mistakes should be avoided? Use historical wisdom to strengthen your current argument.
+## Output Requirements
 
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                       OUTPUT FORMAT REQUIREMENTS                             ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-
-You MUST respond with a JSON object in the following format ONLY:
+YOU MUST respond with a JSON object:
 {{
-  "argument": "Your conversational, engaging bull argument here. Make it compelling and debate-ready.",
-  "evidence_strength": 0.85,  // Score 0-1: How many concrete data points support your case?
-  "logic_clarity": 0.90,      // Score 0-1: How clear and compelling is your reasoning?
-  "argument_type": "balanced_analysis"  // Type: "growth_focused", "fundamentals_driven", "momentum_based", etc.
+  "assumption_1_probability": 0.XX,  // Your estimate (0-1)
+  "assumption_2_probability": 0.XX,
+  "assumption_3_probability": 0.XX,
+  "assumption_4_probability": 0.XX,
+  "combined_probability_percent": X.X,  // Product of above 4 as percentage
+  "argument": "Your argument here (200-400 words)",
+  "evidence_strength": 0.85,  // How specific and data-backed?
+  "logic_clarity": 0.90,      // How clear the reasoning?
+  "certainty_level": 0.75,    // Your confidence in this assessment
+  "biggest_risk": "What's most likely to break this thesis?"
 }}
 
 CRITICAL RULES:
 - Your response MUST be valid JSON
 - Do NOT include any text outside the JSON object
-- The "argument" field should be 200-400 words, conversational and engaging
-- Be specific: Reference actual data, numbers, trends from the resources provided
-"""
+- Show your assumption probabilities explicitly
+- Show combined probability calculation
+- Your argument should reference actual data from the resources
+- Be intellectually honest: Don't just list positives, quantify assumptions
+
+WORLDVIEW CONTEXT:
+- Philosophy: {self.worldview.world_view.value}
+- Research Purpose: {self.worldview.research_purpose.value}
+- Quality Threshold: Evidence ≥ {self.worldview.quality_thresholds['evidence_strength']:.0%}, Logic ≥ {self.worldview.quality_thresholds['logic_clarity']:.0%}"""
         
         # User message: Provide data and context
         user_content = f"""╔══════════════════════════════════════════════════════════════════════════════╗
@@ -561,102 +544,7 @@ Now generate your compelling BULL ANALYST argument with self-assessment in JSON 
             {"role": "user", "content": user_content}
         ]
     
-    def _build_bull_messages(
-        self,
-        data_section: str,
-        strategy: Dict,
-        history: str,
-        opponent_argument: str,
-        past_memories: str,
-    ) -> list:
-        """Build Bull's messages with proper system/user separation"""
-        
-        # System message: Define role, philosophy, and rules
-        system_content = f"""You are a Bull Analyst with a clear investment philosophy and analytical framework.
 
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                      YOUR INVESTMENT PHILOSOPHY                              ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-
-WORLDVIEW: {self.worldview.world_view.value}
-  • Core Belief: {self.worldview.core_beliefs['market_nature']}
-  • Opportunity Source: {self.worldview.core_beliefs['opportunity_source']}
-  • Risk View: {self.worldview.core_beliefs['risk_view']}
-
-RESEARCH PURPOSE: {self.worldview.research_purpose.value}
-  • Debate Goal: {self.worldview.core_beliefs['debate_goal']}
-
-ARGUMENT QUALITY STANDARD: {self.worldview.argument_quality.value}
-  • Evidence Strength Requirement: {self.worldview.quality_thresholds['evidence_strength']:.0%}
-  • Logic Clarity Requirement: {self.worldview.quality_thresholds['logic_clarity']:.0%}
-  • Growth Potential Requirement: {self.worldview.quality_thresholds.get('growth_potential', 0.15):.0%}
-
-CURRENT STRATEGY: {strategy['approach']}
-  • Focus Areas: {', '.join(strategy['focus_areas'])}
-  • Argument Tone: {strategy['tone']}
-
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                           YOUR MISSION                                       ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-
-Based on your philosophy, build a strong, evidence-based case emphasizing:
-1. Growth Potential: Market opportunities, revenue projections, scalability
-2. Competitive Advantages: Unique products, strong branding, market positioning
-3. Positive Indicators: Financial health, industry trends, positive news
-
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                        IMPORTANT PRINCIPLES                                  ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-
-- Follow your worldview: {self.worldview.core_beliefs['market_nature']}
-- Stay true to your purpose: {self.worldview.core_beliefs['debate_goal']}
-- Meet your quality standards: Evidence ≥ {self.worldview.quality_thresholds['evidence_strength']:.0%}, Logic ≥ {self.worldview.quality_thresholds['logic_clarity']:.0%}
-- Avoid: {', '.join(self.worldview.forbidden_argument_types)}
-
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                       OUTPUT REQUIREMENTS                                    ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-
-Present your argument in a conversational, engaging style that:
-1. Directly addresses the bear's concerns with specific data
-2. Demonstrates the strengths of your position
-3. Reflects your investment philosophy consistently
-4. Meets your quality standards (evidence-based, logically clear)
-"""
-        
-        # User message: Provide data and context
-        user_content = f"""╔══════════════════════════════════════════════════════════════════════════════╗
-║                          AVAILABLE DATA                                      ║
-║                  (Sorted by my worldview weights)                            ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-
-{data_section}
-
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                         DEBATE HISTORY                                       ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-
-{history if history else "This is the start of the debate."}
-
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                       OPPONENT'S ARGUMENT                                    ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-
-{opponent_argument if opponent_argument else "No bear argument yet."}
-
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                    PAST LESSONS LEARNED                                      ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-
-{past_memories if past_memories else "No relevant past experiences."}
-
-Now, based on the above data and context, generate your bull argument:
-"""
-        
-        return [
-            {"role": "system", "content": system_content},
-            {"role": "user", "content": user_content}
-        ]
     
     def _build_bear_messages_with_assessment(
         self,
@@ -669,115 +557,112 @@ Now, based on the above data and context, generate your bull argument:
         """Build Bear's messages with self-assessment requirement"""
         
         # System message: Define role, philosophy, and rules
-        system_content = f"""You are a Bear Analyst making the case against investing in the stock. Your goal is to present a well-reasoned argument emphasizing risks, challenges, and negative indicators. Leverage the provided research and data to highlight potential downsides and counter bullish arguments effectively.
+        system_content = f"""🎯 YOUR ROLE: Bear Analyst (Critical Case Challenger)
+You are responsible for evaluating MODEL 5: Assumption Chain Fragility
 
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                        YOUR CORE ROLE & MISSION                              ║
-╚══════════════════════════════════════════════════════════════════════════════╝
+Your task: Systematically challenge the bull case by examining WHICH assumptions are most fragile, likely to break, or underestimated in probability. Show where the bull's confidence exceeds the evidence.
 
-PRIMARY OBJECTIVE:
-Present a compelling bear case that demonstrates the significant risks and challenges in this investment. Focus on identifying red flags and systematically refuting bull optimism with data-driven risk analysis.
+## Your Workflow
 
-YOUR INVESTMENT PHILOSOPHY:
-- Worldview: {self.worldview.world_view.value}
-  {self.worldview.core_beliefs['market_nature']}
-  
-- Risk Source: {self.worldview.core_beliefs['risk_source']}
-  
-- Opportunity Perspective: {self.worldview.core_beliefs['opportunity_view']}
+### Step 1: Extract Bull's Assumption Chain
 
-- Debate Philosophy: {self.worldview.core_beliefs['debate_goal']}
+From the bull argument, identify their core assumptions:
 
-RESEARCH PURPOSE: {self.worldview.research_purpose.value}
-Your goal is to reveal overlooked risks and protect wealth by identifying why this investment should be avoided or approached with extreme caution.
+**Assumption 1: Business Foundation**
+- What they're assuming: [extracted from their argument]
+- Their claimed probability: __%
+- My assessment: [Overconfident? Underconfident?]
 
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                      KEY POINTS TO FOCUS ON                                  ║
-╚══════════════════════════════════════════════════════════════════════════════╝
+**Assumption 2: Growth Potential**
+- What they're assuming: [extracted from their argument]
+- Their claimed probability: __%
+- My assessment: [Realistic? Too optimistic?]
 
-1. RISKS & CHALLENGES (Priority: HIGH)
-   • Market risks: Market saturation, declining demand, structural headwinds?
-   • Financial instability: Weak cash flow, high debt, margin compression?
-   • Macroeconomic threats: Recession risks, rate sensitivity, commodity exposure?
-   • Execution risks: Management capability, operational complexity, execution track record?
+**Assumption 3: Financial Pathway**
+- What they're assuming: [extracted from their argument]
+- Their claimed probability: __%
+- My assessment: [Achievable? Too many steps?]
 
-2. COMPETITIVE WEAKNESSES (Priority: HIGH)
-   • Market positioning: Is the company losing market share or influence?
-   • Competitive threats: Stronger competitors, disruptive alternatives, price wars?
-   • Innovation gaps: Is the company falling behind in R&D or product development?
-   • Structural disadvantages: Cost structure problems, regulatory headwinds?
+**Assumption 4: Market Recognition**
+- What they're assuming: [extracted from their argument]
+- Their claimed probability: __%
+- My assessment: [Priced in? Or timing risk?]
 
-3. NEGATIVE INDICATORS (Priority: MEDIUM-HIGH)
-   • Financial data concerns: Declining revenue, margin compression, cash flow deterioration?
-   • Adverse trends: Losing customers, market share decline, sentiment deterioration?
-   • Recent negative news: Scandals, lawsuits, executive turnover, guidance cuts?
-   • Valuation risks: Stock overvalued relative to peers or historical averages?
+### Step 2: Challenge Probabilities with Evidence
 
-4. COUNTER BULLISH ARGUMENTS (Priority: MEDIUM)
-   • Critically analyze the bull argument with specific data and sound reasoning
-   • Address bull concerns thoroughly, exposing weaknesses or over-optimistic assumptions
-   • Don't dismiss opportunities—acknowledge them but explain why risks outweigh potential
-   • Provide counterevidence that demonstrates the bear case is more credible
+For EACH assumption, present a competing probability:
 
-5. ENGAGEMENT & TONE (Priority: MEDIUM)
-   • Present arguments in a conversational, engaging style
-   • Debate effectively by directly engaging with the bull's points
-   • Show respect for the opposing view while explaining why the bear case is stronger
-   • Use narrative flow rather than just listing facts—tell a coherent risk story
+**Evidence for Lower Probability:**
+- Historical pattern: [Similar companies failed because...]
+- Execution risk: [Management hasn't shown ability to...]
+- Market headwinds: [Industry trends suggest...]
+- Financial constraints: [Cost structure shows...]
+- Competitive reality: [Competitors are...]
 
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                      YOUR QUALITY STANDARDS                                  ║
-╚══════════════════════════════════════════════════════════════════════════════╝
+**Recalibrated Probability: __%**
+(Usually 20-40% lower than bull's estimate)
 
-Argument Quality: {self.worldview.argument_quality.value}
-- Evidence Strength: ≥ {self.worldview.quality_thresholds['evidence_strength']:.0%}
-  (Use concrete data points, specific numbers, real examples of risks)
-  
-- Risk Identification: ≥ {self.worldview.quality_thresholds.get('risk_identification', 0.75):.0%}
-  (Clearly articulate what could go wrong and the probability of adverse outcomes)
-  
-- Logic Clarity: ≥ {self.worldview.quality_thresholds.get('challenge_depth', 0.75):.0%}
-  (Build clear logical chains: Risk Factor → Potential Impact → Investment Consequence)
+### Step 3: Calculate Fragility Score
 
-STRICT RULES - NEVER:
-{chr(10).join(f"  • {rule}" for rule in self.worldview.forbidden_argument_types)}
+**Fragility Index = 1 - (Recalibrated Combined Probability)**
 
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                    CURRENT DEBATE STRATEGY - ROUND {strategy['round_number']}                    ║
-╚══════════════════════════════════════════════════════════════════════════════╝
+If bull's combined probability = 45%, and my recalibrated = 25%
+Fragility Score = 1 - 0.25 = 0.75 (75% fragile!)
 
-Round Instruction: {strategy['round_instruction']}
-Strategy: {strategy['approach']}
-Focus Areas: {', '.join(strategy['focus_areas'])}
-Tone: {strategy['tone']}
+**Identify Weakest Link:**
+Which single assumption breaks the entire thesis if wrong?
+- Usually this is Assumption 1 or 2
+- Focus here: "If this fails, thesis collapses"
 
-KEY GUIDANCE FOR THIS ROUND:
-{self._get_round_specific_guidance(strategy['round_number'], opponent_argument)}
+### Step 4: Meta-Cognitive Check (Honest Self-Review)
 
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                      LEARNING FROM PAST EXPERIENCE                           ║
-╚══════════════════════════════════════════════════════════════════════════════╝
+**Question 1: Am I being fairly skeptical or just negative?**
+- Can I name 3 things the bull got RIGHT?
+- Or am I just contrarian for contrarian's sake?
 
-Reflect on lessons learned from similar situations. What risks materialized before? What were early warning signs? Use historical wisdom to strengthen your current risk assessment.
+**Question 2: What would change my mind?**
+- What specific evidence would make me 60% confident instead of 30%?
+- Am I actually open to being wrong?
 
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                       OUTPUT FORMAT REQUIREMENTS                             ║
-╚══════════════════════════════════════════════════════════════════════════════╝
+**Question 3: Timing vs Thesis**
+- Is the company doomed? Or just wrong timing?
+- (Very different outcomes!)
 
-You MUST respond with a JSON object in the following format ONLY:
+**Question 4: Where's my bias?**
+- Am I naturally pessimistic about tech/growth stocks?
+- Do I have incentive to be bearish?
+
+**Question 5: Certainty Level**
+- My certainty: [30% / 60% / 75% / 90%]
+- If < 60%, reduce fragility by 1 point
+
+## Output Requirements
+
+YOU MUST respond with a JSON object:
 {{
-  "argument": "Your conversational, engaging bear argument here. Make it compelling and debate-ready.",
-  "evidence_strength": 0.85,  // Score 0-1: How many concrete risk factors support your case?
-  "logic_clarity": 0.90,      // Score 0-1: How clear and compelling is your risk analysis?
-  "argument_type": "risk_focused"  // Type: "risk_focused", "valuation_concern", "execution_risk", etc.
+  "bull_combined_probability": 0.45,  // What the bull estimated
+  "recalibrated_probability": 0.28,   // Your more realistic estimate
+  "fragility_index": 0.72,            // 1 - recalibrated_probability
+  "weakest_link": "Assumption 1: The market is growing fast enough",
+  "argument": "Your argument here (200-400 words)",
+  "evidence_strength": 0.80,  // How data-backed is your skepticism?
+  "logic_clarity": 0.85,      // How clear is your reasoning?
+  "certainty_level": 0.65     // Your confidence in this fragility assessment
 }}
 
 CRITICAL RULES:
 - Your response MUST be valid JSON
 - Do NOT include any text outside the JSON object
-- The "argument" field should be 200-400 words, conversational and engaging
-- Be specific: Reference actual data, numbers, trends, and risks from the resources provided
-"""
+- Show recalibrated probabilities explicitly
+- Identify the weakest link clearly
+- Your argument should reference actual data
+- Be intellectually honest: Acknowledge what bull got right, show specifically where overconfident
+
+WORLDVIEW CONTEXT:
+- Philosophy: {self.worldview.world_view.value}
+- Research Purpose: {self.worldview.research_purpose.value}
+- Risk View: {self.worldview.core_beliefs['risk_view']}
+- Quality Threshold: Evidence ≥ {self.worldview.quality_thresholds['evidence_strength']:.0%}, Logic ≥ {self.worldview.quality_thresholds['logic_clarity']:.0%}"""
         
         # User message: Provide data and context
         user_content = f"""╔══════════════════════════════════════════════════════════════════════════════╗
@@ -852,103 +737,6 @@ ROUND {strategy['round_number']} FOCUS:
 {strategy['round_instruction']}
 
 Now generate your compelling BEAR ANALYST argument with self-assessment in JSON format:
-"""
-        
-        return [
-            {"role": "system", "content": system_content},
-            {"role": "user", "content": user_content}
-        ]
-    
-    def _build_bear_messages(
-        self,
-        data_section: str,
-        strategy: Dict,
-        history: str,
-        opponent_argument: str,
-        past_memories: str,
-    ) -> list:
-        """Build Bear's messages with proper system/user separation"""
-        
-        # System message: Define role, philosophy, and rules
-        system_content = f"""You are a Bear Analyst with a clear investment philosophy and analytical framework.
-
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                      YOUR INVESTMENT PHILOSOPHY                              ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-
-WORLDVIEW: {self.worldview.world_view.value}
-  • Core Belief: {self.worldview.core_beliefs['market_nature']}
-  • Risk Source: {self.worldview.core_beliefs['risk_source']}
-  • Opportunity View: {self.worldview.core_beliefs['opportunity_view']}
-
-RESEARCH PURPOSE: {self.worldview.research_purpose.value}
-  • Debate Goal: {self.worldview.core_beliefs['debate_goal']}
-
-ARGUMENT QUALITY STANDARD: {self.worldview.argument_quality.value}
-  • Evidence Strength Requirement: {self.worldview.quality_thresholds['evidence_strength']:.0%}
-  • Risk Identification Requirement: {self.worldview.quality_thresholds.get('risk_identification', 0.75):.0%}
-  • Challenge Depth Requirement: {self.worldview.quality_thresholds.get('challenge_depth', 0.75):.0%}
-
-CURRENT STRATEGY: {strategy['approach']}
-  • Focus Areas: {', '.join(strategy['focus_areas'])}
-  • Argument Tone: {strategy['tone']}
-
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                           YOUR MISSION                                       ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-
-Based on your philosophy, present a well-reasoned case emphasizing:
-1. Risks and Challenges: Market saturation, financial instability, macro threats
-2. Competitive Weaknesses: Market positioning issues, declining innovation, competitor threats
-3. Negative Indicators: Financial data concerns, adverse trends, negative news
-
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                        IMPORTANT PRINCIPLES                                  ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-
-- Follow your worldview: {self.worldview.core_beliefs['market_nature']}
-- Stay true to your purpose: {self.worldview.core_beliefs['debate_goal']}
-- Meet your quality standards: Evidence ≥ {self.worldview.quality_thresholds['evidence_strength']:.0%}, Risk ID ≥ {self.worldview.quality_thresholds.get('risk_identification', 0.75):.0%}
-- Avoid: {', '.join(self.worldview.forbidden_argument_types)}
-
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                       OUTPUT REQUIREMENTS                                    ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-
-Present your argument in a conversational, engaging style that:
-1. Directly challenges the bull's claims with specific data
-2. Exposes weaknesses or over-optimistic assumptions
-3. Reflects your investment philosophy consistently
-4. Meets your quality standards (evidence-based, risk-focused)
-"""
-        
-        # User message: Provide data and context
-        user_content = f"""╔══════════════════════════════════════════════════════════════════════════════╗
-║                          AVAILABLE DATA                                      ║
-║                  (Sorted by my worldview weights)                            ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-
-{data_section}
-
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                         DEBATE HISTORY                                       ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-
-{history if history else "This is the start of the debate."}
-
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                       OPPONENT'S ARGUMENT                                    ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-
-{opponent_argument if opponent_argument else "No bull argument yet."}
-
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                    PAST LESSONS LEARNED                                      ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-
-{past_memories if past_memories else "No relevant past experiences."}
-
-Now, based on the above data and context, generate your bear argument:
 """
         
         return [
@@ -1045,61 +833,6 @@ Generate improved argument with self-assessment in JSON format:
             }
         
         return argument, evidence
-    
-    def _regenerate_argument(
-        self,
-        original_argument: str,
-        quality_feedback: str,
-        filtered_data: Dict,
-        strategy: Dict,
-    ) -> str:
-        """Regenerate argument based on quality feedback"""
-        
-        # System message: Role as quality improver
-        system_content = f"""You are a {self.role.capitalize()} Analyst who needs to improve an argument that didn't meet quality standards.
-
-Your Investment Philosophy:
-- Worldview: {self.worldview.world_view.value}
-- Research Purpose: {self.worldview.research_purpose.value}
-- Quality Standard: {self.worldview.argument_quality.value}
-
-Quality Requirements:
-- Evidence strength ≥ {self.worldview.quality_thresholds.get('evidence_strength', 0.75):.0%}
-- Logic clarity ≥ {self.worldview.quality_thresholds.get('logic_clarity', 0.75):.0%}
-- Forbidden argument types: {', '.join(self.worldview.forbidden_argument_types)}
-
-Your task: Regenerate the argument addressing the quality issues while maintaining your investment philosophy.
-"""
-        
-        # User message: Provide the feedback
-        user_content = f"""╔══════════════════════════════════════════════════════════════════════════════╗
-║                       ORIGINAL ARGUMENT                                      ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-
-{original_argument}
-
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                       QUALITY ISSUES                                         ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-
-{quality_feedback}
-
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                    IMPROVEMENT REQUIREMENTS                                  ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-
-Please regenerate your argument, addressing the quality issues above while maintaining your investment philosophy.
-
-Generate improved argument:
-"""
-        
-        messages = [
-            {"role": "system", "content": system_content},
-            {"role": "user", "content": user_content}
-        ]
-        
-        response = self.llm.invoke(messages)
-        return response.content
     
     def _save_decision_log(self, ticker: str):
         """Save decision log to file"""
