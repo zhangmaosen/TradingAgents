@@ -121,6 +121,12 @@ Guidelines for Decision-Making:
 3. **Refine the Trader's Plan**: Start with the trader's original plan, **{trader_plan}**, and adjust it based on the analysts' insights.
 4. **Learn from Past Mistakes**: Use lessons from **{past_memory_str}** to address prior misjudgments and improve the decision you are making now to make sure you don't make a wrong BUY/SELL/HOLD call that loses money.
 
+CRITICAL ACCOUNT VALIDATION RULES:
+- **For HOLD decisions**: quantity MUST be 0 (no shares should be traded when holding)
+- **For SELL decisions**: quantity CANNOT exceed current holdings ({current_position} shares). If current_position = 0, you CANNOT choose SELL.
+- **For BUY decisions**: quantity must be feasible given available cash (${allocation_budget:,.2f})
+- Always check account_snapshot below to ensure your recommendation is compatible with current positions
+
 Deliverables:
 - A clear and actionable recommendation: Buy, Sell, or Hold.
 - Detailed reasoning anchored in the debate and past reflections.
@@ -143,6 +149,9 @@ Focus on actionable insights and continuous improvement. Build on past lessons, 
 When you deliver the final answer, end with a JSON object inside a fenced code block (```json ... ```). The JSON must have the following keys:
 - `decision`: one of BUY, SELL, or HOLD (uppercase).
 - `quantity`: integer number of shares to trade that respects the account snapshot and trader plan.
+  * If decision is HOLD: set quantity to 0
+  * If decision is SELL: set quantity ≤ {current_position} (current position)
+  * If decision is BUY: set quantity ≤ {int(allocation_budget // latest_price) if latest_price > 0 else 0} (max affordable)
 - `updated_plan`: concise summary (<200 tokens) of the revised trading plan.
 - `notes`: any additional execution considerations.
 """
@@ -208,16 +217,23 @@ When you deliver the final answer, end with a JSON object inside a fenced code b
         elif action == "SELL":
             computed_quantity = max_sellable
         else:
+            # HOLD 决策：quantity 必须为 0
             computed_quantity = 0
 
         final_quantity = computed_quantity
         if json_quantity is not None and json_quantity >= 0:
-            final_quantity = json_quantity
-            if action == "BUY" and latest_price > 0:
+            # LLM 生成的 quantity 只在 BUY/SELL 时才采用
+            # HOLD 时无论 LLM 返回什么，都必须设置为 0
+            if action == "HOLD":
+                final_quantity = 0
+            elif action == "BUY" and latest_price > 0:
                 affordable = int(allocation_budget // latest_price)
-                final_quantity = min(final_quantity, max(affordable, 0))
-            if action == "SELL" and max_sellable >= 0:
-                final_quantity = min(final_quantity, max_sellable)
+                final_quantity = min(json_quantity, max(affordable, 0))
+            elif action == "SELL":
+                # SELL 时，quantity 不能超过当前持仓
+                final_quantity = min(json_quantity, max_sellable)
+            else:
+                final_quantity = json_quantity
 
         final_quantity = max(final_quantity, 0)
 

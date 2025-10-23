@@ -2,6 +2,7 @@ import questionary
 from typing import List, Optional, Tuple, Dict
 
 from cli.models import AnalystType
+from tradingagents.default_config import DEFAULT_CONFIG
 
 ANALYST_ORDER = [
     ("Market Analyst", AnalystType.MARKET),
@@ -150,9 +151,11 @@ def select_shallow_thinking_agent(provider) -> str:
             ("google/gemini-2.0-flash-exp:free - Gemini Flash 2.0 offers a significantly faster time to first token", "google/gemini-2.0-flash-exp:free"),
         ],
         "ollama": [
-            ("qwen3:8b local", "qwen3:8b"),
+            ("qwen3:30b local", "qwen3:30b"),
             #("llama3.2 local", "llama3.2"),
-        ]
+        ],
+        "zhipu": [("glm-4.5", "glm-4.5"),
+                  ("glm-4.5-air: glm-4.5 with AIR optimizations", "glm-4.5-air")],
     }
 
     choice = questionary.select(
@@ -212,9 +215,11 @@ def select_deep_thinking_agent(provider) -> str:
             ("Deepseek - latest iteration of the flagship chat model family from the DeepSeek team.", "deepseek/deepseek-chat-v3-0324:free"),
         ],
         "ollama": [
-            ("qwen3:8b local", "qwen3:8b"),
+            ("qwen3:30b local", "qwen3:30b"),
             #("qwen3", "qwen3"),
-        ]
+        ],
+        "zhipu": [("glm-4.5", "glm-4.5"),
+                  ("glm-4.5-air: glm-4.5 with AIR optimizations", "glm-4.5-air")],
     }
     
     choice = questionary.select(
@@ -243,11 +248,11 @@ def select_llm_provider() -> tuple[str, str]:
     """Select the OpenAI api url using interactive selection."""
     # Define OpenAI api options with their corresponding endpoints
     BASE_URLS = [
-        ("OpenAI", "https://api.openai.com/v1"),
+        ("Ollama", DEFAULT_CONFIG.get("backend_url", "http://localhost:11434/v1")),  
+        ("ZhiPu", "https://open.bigmodel.cn/api/paas/v4/"),
         ("Anthropic", "https://api.anthropic.com/"),
         ("Google", "https://generativelanguage.googleapis.com/v1"),
         ("Openrouter", "https://openrouter.ai/api/v1"),
-        ("Ollama", "http://100.121.219.121:11434/v1"),        
     ]
     
     choice = questionary.select(

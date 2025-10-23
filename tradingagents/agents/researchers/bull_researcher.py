@@ -1,6 +1,7 @@
 from langchain_core.messages import AIMessage
 import time
 import json
+from tradingagents.agents.utils.debate_separator import DEBATE_RESPONSE_SEPARATOR
 
 
 def create_bull_researcher(llm, memory):
@@ -47,8 +48,8 @@ Use this information to deliver a compelling bull argument, refute the bear's co
         argument = f"Bull Analyst: {response.content}"
 
         new_investment_debate_state = {
-            "history": history + "\n" + argument,
-            "bull_history": bull_history + "\n" + argument,
+            "history": history + DEBATE_RESPONSE_SEPARATOR + argument if history else argument,
+            "bull_history": bull_history + DEBATE_RESPONSE_SEPARATOR + argument if bull_history else argument,
             "bear_history": investment_debate_state.get("bear_history", ""),
             "current_response": argument,
             "count": investment_debate_state["count"] + 1,

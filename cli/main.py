@@ -27,6 +27,7 @@ from rich.rule import Rule
 
 from tradingagents.graph.trading_graph import TradingAgentsGraph
 from tradingagents.default_config import DEFAULT_CONFIG
+from tradingagents.agents.utils.debate_separator import split_debate_responses
 from cli.models import AnalystType
 from cli.utils import *
 
@@ -1108,27 +1109,55 @@ def run_analysis():
                         ):
                             debate_state = chunk["investment_debate_state"]
 
+                            # 获取牛熊双方的完整历史
+                            bull_responses = []
+                            bear_responses = []
+                            
                             if "bull_history" in debate_state and debate_state["bull_history"]:
                                 update_research_team_status("in_progress")
-                                bull_responses = debate_state["bull_history"].split("\n")
-                                latest_bull = bull_responses[-1] if bull_responses else ""
-                                if latest_bull:
-                                    message_buffer.add_message("Reasoning", latest_bull)
-                                    message_buffer.update_report_section(
-                                        "investment_plan",
-                                        f"### Bull Researcher Analysis\n{latest_bull}",
-                                    )
-
+                                bull_responses = split_debate_responses(debate_state["bull_history"])
+                                # 只保留非空响应
+                                bull_responses = [r for r in bull_responses if r.strip()]
+                            
                             if "bear_history" in debate_state and debate_state["bear_history"]:
                                 update_research_team_status("in_progress")
-                                bear_responses = debate_state["bear_history"].split("\n")
-                                latest_bear = bear_responses[-1] if bear_responses else ""
-                                if latest_bear:
-                                    message_buffer.add_message("Reasoning", latest_bear)
-                                    message_buffer.update_report_section(
-                                        "investment_plan",
-                                        f"{message_buffer.report_sections['investment_plan']}\n\n### Bear Researcher Analysis\n{latest_bear}",
-                                    )
+                                bear_responses = split_debate_responses(debate_state["bear_history"])
+                                # 只保留非空响应
+                                bear_responses = [r for r in bear_responses if r.strip()]
+                            
+                            # 构建交替对话模式：Round 1: Bull → Bear, Round 2: Bull → Bear, ...
+                            debate_content = "### 📊 Research Team Debate (牛熊对话)\n\n"
+                            max_rounds = max(len(bull_responses), len(bear_responses))
+                            
+                            for round_idx in range(1, max_rounds + 1):
+                                debate_content += f"#### **Round {round_idx}** 🔄\n\n"
+                                
+                                # Bull 的该轮回复
+                                if round_idx <= len(bull_responses):
+                                    bull_resp = bull_responses[round_idx - 1]
+                                    debate_content += f"**📈 Bull Analyst:**\n{bull_resp}\n\n"
+                                    # 只在最新轮次添加到消息缓冲
+                                    if round_idx == len(bull_responses):
+                                        message_buffer.add_message("Reasoning", f"Bull (Round {round_idx}): {bull_resp[:200]}...")
+                                
+                                # Bear 的该轮回复
+                                if round_idx <= len(bear_responses):
+                                    bear_resp = bear_responses[round_idx - 1]
+                                    debate_content += f"**📉 Bear Analyst:**\n{bear_resp}\n\n"
+                                    # 只在最新轮次添加到消息缓冲
+                                    if round_idx == len(bear_responses):
+                                        message_buffer.add_message("Reasoning", f"Bear (Round {round_idx}): {bear_resp[:200]}...")
+                                
+                                # 轮次分隔线
+                                if round_idx < max_rounds:
+                                    debate_content += "---\n\n"
+                            
+                            # 更新报告（只在有内容时）
+                            if bull_responses or bear_responses:
+                                message_buffer.update_report_section(
+                                    "investment_plan",
+                                    debate_content,
+                                )
 
                             if (
                                 "judge_decision" in debate_state
@@ -1375,11 +1404,23 @@ def run_analysis():
                                 )
                         
                         # 更新反思统计信息
+                        # 计算累积平均收益：(旧总和 + 新总和) / (旧总数 + 新总数)
+                        old_total = message_buffer.reflection_stats.get("total_reflections", 0)
+                        old_avg = message_buffer.reflection_stats.get("avg_return", 0.0)
+                        new_count = reflection_stats["processed"]
+                        new_avg = reflection_stats.get("avg_return", 0.0)
+                        
+                        # 累积平均公式
+                        if old_total + new_count > 0:
+                            cumulative_avg = (old_total * old_avg + new_count * new_avg) / (old_total + new_count)
+                        else:
+                            cumulative_avg = 0.0
+                        
                         message_buffer.update_reflection_stats({
-                            "total_reflections": message_buffer.reflection_stats.get("total_reflections", 0) + reflection_stats["processed"],
+                            "total_reflections": old_total + new_count,
                             "successful_decisions": message_buffer.reflection_stats.get("successful_decisions", 0) + reflection_stats.get("successful_decisions", 0),
                             "failed_decisions": message_buffer.reflection_stats.get("failed_decisions", 0) + reflection_stats.get("failed_decisions", 0),
-                            "avg_return": reflection_stats.get("avg_return", 0.0),
+                            "avg_return": cumulative_avg,
                         })
                         
                         # 更新显示
@@ -1465,7 +1506,10 @@ def run_analysis():
                         message_buffer.add_message("Debug", f"即时回测失败（不影响主流程）: {exc}")
 
                 update_display(layout)
-
+                
+                # 暂停30秒让用户看清UI中最后的输出
+                time.sleep(30)
+            
 
 @app.command()
 def analyze():

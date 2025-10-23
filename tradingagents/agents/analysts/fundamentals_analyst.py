@@ -1,7 +1,7 @@
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 import time
 import json
-from tradingagents.agents.utils.agent_utils import get_fundamentals, get_balance_sheet, get_cashflow, get_income_statement, get_insider_sentiment, get_insider_transactions
+from tradingagents.agents.utils.agent_utils import get_fundamentals, get_balance_sheet, get_cashflow, get_income_statement, get_earning_call_transcripts, get_insider_sentiment, get_insider_transactions
 from tradingagents.dataflows.config import get_config
 
 
@@ -16,12 +16,21 @@ def create_fundamentals_analyst(llm):
             get_balance_sheet,
             get_cashflow,
             get_income_statement,
+            get_earning_call_transcripts,
         ]
 
         system_message = (
-            "You are a researcher tasked with analyzing fundamental information over the past week about a company. Please write a comprehensive report of the company's fundamental information such as financial documents, company profile, basic company financials, and company financial history to gain a full view of the company's fundamental information to inform traders. Make sure to include as much detail as possible. Do not simply state the trends are mixed, provide detailed and finegrained analysis and insights that may help traders make decisions."
-            + " Make sure to append a Markdown table at the end of the report to organize key points in the report, organized and easy to read."
-            + " Use the available tools: `get_fundamentals` for comprehensive company analysis, `get_balance_sheet`, `get_cashflow`, and `get_income_statement` for specific financial statements.",
+            "You are a fundamental analyst researcher tasked with providing deep, comprehensive analysis of a company's financial health and future prospects. Your analysis must include:\n"
+            "1. **Financial Statements Analysis**: Use `get_balance_sheet`, `get_cashflow`, and `get_income_statement` to extract key metrics, trends, and financial health indicators.\n"
+            "2. **Management Insights from Earnings Calls (CRITICAL)**: MUST use `get_earning_call_transcripts` to retrieve the latest earnings call transcript. This is essential because:\n"
+            "   - Management guidance provides forward-looking statements about the company's strategy and expectations\n"
+            "   - Earnings calls contain crucial sentiment and tone indicators about company performance and market conditions\n"
+            "   - CEO/CFO commentary reveals management confidence level and strategic priorities\n"
+            "   - Q&A sections expose investor concerns and company responses to challenges\n"
+            "   - These insights are critical for traders to understand management's view on future performance\n"
+            "3. **Integrated Report**: Combine financial data with management sentiment and guidance to create a comprehensive fundamental report.\n\n"
+            "IMPORTANT: You MUST call `get_earning_call_transcripts` as part of your analysis - do not skip this step as it is essential for complete fundamental analysis.\n"
+            "Write in detail with specific numbers, percentages, and forward-looking insights. Include a Markdown table at the end organizing key findings."
         )
 
         prompt = ChatPromptTemplate.from_messages(
@@ -35,7 +44,7 @@ def create_fundamentals_analyst(llm):
                     " If you or any other assistant has the FINAL TRANSACTION PROPOSAL: **BUY/HOLD/SELL** or deliverable,"
                     " prefix your response with FINAL TRANSACTION PROPOSAL: **BUY/HOLD/SELL** so the team knows to stop."
                     " You have access to the following tools: {tool_names}.\n{system_message}"
-                    "For your reference, the current date is {current_date}. The company we want to look at is {ticker}",
+                    "For your reference, the current date is {current_date}. The company's stock symbol we want to look at is {ticker}",
                 ),
                 MessagesPlaceholder(variable_name="messages"),
             ]

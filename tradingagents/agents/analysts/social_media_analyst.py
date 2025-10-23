@@ -31,7 +31,7 @@ def create_social_media_analyst(llm):
                     " If you or any other assistant has the FINAL TRANSACTION PROPOSAL: **BUY/HOLD/SELL** or deliverable,"
                     " prefix your response with FINAL TRANSACTION PROPOSAL: **BUY/HOLD/SELL** so the team knows to stop."
                     " You have access to the following tools: {tool_names}.\n{system_message}"
-                    "For your reference, the current date is {current_date}. The current company we want to analyze is {ticker}",
+                    "For your reference, the current date is {current_date}. The current company's stock symbol ticker we want to analyze is {ticker}",
                 ),
                 MessagesPlaceholder(variable_name="messages"),
             ]
@@ -44,7 +44,14 @@ def create_social_media_analyst(llm):
 
         chain = prompt | llm.bind_tools(tools)
 
-        result = chain.invoke(state["messages"])
+        try:
+            result = chain.invoke(state["messages"])
+        except Exception as e:
+            print(f"Error invoking chain in social_media_analyst: {str(e)}")
+            return {
+                "messages": [],
+                "sentiment_report": f"Failed to analyze social media data: {str(e)}",
+            }
 
         report = ""
 

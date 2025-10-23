@@ -75,3 +75,27 @@ def get_income_statement(ticker: str, freq: str = "quarterly", curr_date: str = 
 
     return _make_api_request("INCOME_STATEMENT", params)
 
+
+def get_earning_call_transcripts(ticker: str, quarter: str = None, curr_date: str = None) -> str:
+    """
+    Retrieve earnings call transcripts for a given ticker symbol using Alpha Vantage.
+
+    Args:
+        ticker (str): Ticker symbol of the company
+        quarter (str): Fiscal quarter in YYYYQM format (e.g., "2024Q1", "2024Q2")
+        curr_date (str): Current date you are trading at, yyyy-mm-dd (not used for Alpha Vantage)
+
+    Returns:
+        str: Earnings call transcript data with sentiment analysis
+    """
+    if not quarter:
+        raise ValueError("quarter parameter is required for earning call transcripts. Format: YYYYQM (e.g., 2024Q1)")
+    
+    params = {
+        "symbol": ticker,
+        "quarter": quarter,
+    }
+
+    return _make_api_request("EARNINGS_CALL_TRANSCRIPT", params)
+
+

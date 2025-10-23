@@ -14,8 +14,8 @@ DEFAULT_CONFIG = {
     "quick_think_llm": "gpt-4o-mini",
     "backend_url": "http://100.103.46.96:11434/v1",
     # Debate and discussion settings
-    "max_debate_rounds": 1,
-    "max_risk_discuss_rounds": 1,
+    "max_debate_rounds": 3,
+    "max_risk_discuss_rounds": 3,
     "max_recur_limit": 100,
     # Trading and backtesting defaults
     "default_trade_quantity": 1,
@@ -29,6 +29,12 @@ DEFAULT_CONFIG = {
     "reflection_lookforward_days": 5,      # 决策后向前看多少天计算实际收益
     "reflection_min_age_days": 5,          # 决策至少保存多久才能触发反思
     "use_hierarchical_memory": False,      # 是否启用分层记忆系统（建议生产环境启用）
+    
+    # Philosophical Worldview System (三观系统)
+    "use_philosophical_worldview": True,  # 是否启用哲学三观系统（Bull/Bear有不同的投资哲学）
+    "enable_worldview_logging": True,      # 是否启用三观决策日志（详细记录每个决策的理由）
+    "worldview_reflection_enabled": True,  # 是否启用三观自我反思（辩论后反思并调整）
+    
     # Data vendor configuration
     # Category-level configuration (default for all tools in category)
     "data_vendors": {

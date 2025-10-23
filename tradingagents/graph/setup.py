@@ -7,6 +7,10 @@ from langgraph.prebuilt import ToolNode
 
 from tradingagents.agents import *
 from tradingagents.agents.utils.agent_states import AgentState
+from tradingagents.agents.researchers.philosophical_researcher import (
+    create_philosophical_bull_researcher,
+    create_philosophical_bear_researcher,
+)
 
 from .conditional_logic import ConditionalLogic
 
@@ -25,6 +29,7 @@ class GraphSetup:
         invest_judge_memory,
         risk_manager_memory,
         conditional_logic: ConditionalLogic,
+        config: Dict[str, Any] = None,  # 新增：配置字典
     ):
         """Initialize with required components."""
         self.quick_thinking_llm = quick_thinking_llm
@@ -36,6 +41,7 @@ class GraphSetup:
         self.invest_judge_memory = invest_judge_memory
         self.risk_manager_memory = risk_manager_memory
         self.conditional_logic = conditional_logic
+        self.config = config or {}  # 新增：保存配置
 
     def setup_graph(
         self, selected_analysts=["market", "social", "news", "fundamentals"]
@@ -86,12 +92,39 @@ class GraphSetup:
             tool_nodes["fundamentals"] = self.tool_nodes["fundamentals"]
 
         # Create researcher and manager nodes
-        bull_researcher_node = create_bull_researcher(
-            self.quick_thinking_llm, self.bull_memory
-        )
-        bear_researcher_node = create_bear_researcher(
-            self.quick_thinking_llm, self.bear_memory
-        )
+        # 检查是否启用哲学三观系统
+        use_philosophical_worldview = self.config.get("use_philosophical_worldview", False)
+        
+        if use_philosophical_worldview:
+            # 使用有三观的Philosophical Researcher
+            enable_worldview_logging = self.config.get("enable_worldview_logging", True)
+            bull_researcher_node = create_philosophical_bull_researcher(
+                self.quick_thinking_llm,
+                self.bull_memory,
+                worldview=None,  # 使用默认Bull三观
+                enable_logging=enable_worldview_logging,
+            )
+            bear_researcher_node = create_philosophical_bear_researcher(
+                self.quick_thinking_llm,
+                self.bear_memory,
+                worldview=None,  # 使用默认Bear三观
+                enable_logging=enable_worldview_logging,
+            )
+            
+            print("\n" + "="*80)
+            print("✓ 启用了 Philosophical Worldview 系统")
+            print("  Bull和Bear Researcher现在拥有完整的投资哲学和价值观")
+            print("  详细的决策日志将保存到 results/{ticker}/worldview_logs/")
+            print("="*80 + "\n")
+        else:
+            # 使用传统的Researcher
+            bull_researcher_node = create_bull_researcher(
+                self.quick_thinking_llm, self.bull_memory
+            )
+            bear_researcher_node = create_bear_researcher(
+                self.quick_thinking_llm, self.bear_memory
+            )
+        
         research_manager_node = create_research_manager(
             self.deep_thinking_llm, self.invest_judge_memory
         )

@@ -34,3 +34,5 @@ tradingagents/dataflows/data_cache/
 
 # Temporary or debug logs
 *.log
+
+tmp/

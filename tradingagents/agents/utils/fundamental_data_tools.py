@@ -75,3 +75,26 @@ def get_income_statement(
         str: A formatted report containing income statement data
     """
     return route_to_vendor("get_income_statement", ticker, freq, curr_date)
+
+
+@tool
+def get_earning_call_transcripts(
+    ticker: Annotated[str, "ticker symbol"],
+    quarter: Annotated[str, "fiscal quarter in YYYYQM format (e.g., 2024Q1, 2024Q2)"],
+    curr_date: Annotated[str, "current date you are trading at, yyyy-mm-dd"] = None,
+) -> str:
+    """
+    Retrieve earnings call transcripts for a given ticker symbol.
+    Provides complete transcript with LLM-based sentiment analysis.
+    Uses the configured fundamental_data vendor (Alpha Vantage).
+    
+    Args:
+        ticker (str): Ticker symbol of the company
+        quarter (str): Fiscal quarter in YYYYQM format (e.g., 2024Q1, 2024Q2)
+                      Supports quarters since 2010Q1
+        curr_date (str): Current date you are trading at, yyyy-mm-dd
+    
+    Returns:
+        str: A formatted report containing earnings call transcript with sentiment analysis
+    """
+    return route_to_vendor("get_earning_call_transcripts", ticker, quarter, curr_date)
